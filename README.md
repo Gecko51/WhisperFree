@@ -1,4 +1,7 @@
-# Handy
+# WhisperFree
+
+> This comes from the personal Fork of cjpais/Handy by Gecko51. It ads custom features on top of the original Handy app while keeping full compatibility with upstream.
+
 
 [![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/invite/WVBeWsNXK4)
 
