@@ -1,114 +1,165 @@
+---
+description: Guidelines and context for AI coding agents operating in this repository.
+alwaysApply: true
+---
+
 # AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to AI coding agents (Claude Code, Cursor, Copilot) when working in this repository.
 
 ## Development Commands
 
-**Prerequisites:**
+### Prerequisites
 
 - [Rust](https://rustup.rs/) (latest stable)
 - [Bun](https://bun.sh/) package manager
 
-**Core Development:**
+### Build and Run
 
 ```bash
-# Install dependencies
-bun install
-
-# Run in development mode
-bun run tauri dev
-# If cmake error on macOS:
-CMAKE_POLICY_VERSION_MINIMUM=3.5 bun run tauri dev
-
-# Build for production
-bun run tauri build
-
-# Frontend only development
-bun run dev        # Start Vite dev server
-bun run build      # Build frontend (TypeScript + Vite)
-bun run preview    # Preview built frontend
+bun install              # Install dependencies
+bun run tauri dev       # Run in development mode
+bun run tauri build     # Build for production
+bun run dev             # Frontend-only dev server
+bun run build           # Build frontend (TypeScript + Vite)
+bun run preview         # Preview built frontend
 ```
 
-**Model Setup (Required for Development):**
+### Linting and Formatting
 
 ```bash
-# Create models directory
-mkdir -p src-tauri/resources/models
+# Frontend
+bun run lint            # Run ESLint
+bun run lint:fix        # Fix ESLint issues
+bun run format:frontend # Run Prettier
 
-# Download required VAD model
+# Backend
+bun run format:backend  # Run rustfmt
+cd src-tauri && cargo clippy --all-targets --all-features -- -D warnings
+```
+
+### Testing Commands
+
+#### Frontend (Playwright)
+
+```bash
+bun run test:playwright        # Run all tests
+bun run test:playwright:ui     # Run with UI
+bunx playwright test tests/app.spec.ts  # Single test file
+bunx playwright test -g "test name"     # Single test by title
+```
+
+#### Backend (Rust)
+
+```bash
+cd src-tauri && cargo test              # Run all tests
+cd src-tauri && cargo test <name>       # Run single module
+cd src-tauri && cargo test -- --exact <test_name>  # Exact match
+cd src-tauri && cargo test -- --nocapture  # Show print output
+```
+
+### Model Setup (Required)
+
+```bash
+mkdir -p src-tauri/resources/models
 curl -o src-tauri/resources/models/silero_vad_v4.onnx https://blob.handy.computer/silero_vad_v4.onnx
 ```
 
+## Code Style Guidelines
+
+### General Principles
+
+- Write concise, technical code focusing on modularity and declarative patterns
+- Follow existing project conventions strictly before inventing new patterns
+- Use `grep` to understand context before editing
+
+### Frontend (React / TypeScript)
+
+#### Types and Interfaces
+
+- Use TypeScript; prefer `interface` over `type`
+- Avoid enums; use maps or constant objects instead
+- Avoid `any`; use `unknown` if type is truly unknown
+- Shared types: `src/bindings.ts` or `src/lib/types.ts`
+
+#### Components and Hooks
+
+- Use Functional Components with React Hooks
+- Group components logically (e.g., `components/settings/`)
+- Use Zustand for global state (`src/stores/`)
+
+#### Naming Conventions
+
+- Directories/Files: `lowercase-kebab-case` (e.g., `model-selector.tsx`)
+- Components/Interfaces: `PascalCase`
+- Variables/Functions: `camelCase`
+- Constants: `UPPER_SNAKE_CASE`
+
+#### Imports
+
+- External libraries first, then internal modules
+- Prefer named imports over default imports
+
+#### Styling
+
+- Use Tailwind CSS exclusively
+- Use `clsx` and `tailwind-merge` via `cn()` utility for conditional classes
+
+### Backend (Rust / Tauri)
+
+#### Rust Best Practices
+
+- Format with `cargo fmt`, lint with `cargo clippy`
+- Use proper `Result<T, E>` error handling
+- Avoid `.unwrap()` or `.expect()` unless absolutely certain; use `?` operator
+- Tauri Commands must return serializable `Result` types
+- Structure business logic in `managers/` and `audio_toolkit/`
+
+#### Error Handling
+
+- Always return `Result<T, Error>` from public functions
+- Use `?` for error propagation
+- Create custom error types with `thiserror` for complex error scenarios
+- Log errors appropriately before returning
+
 ## Architecture Overview
 
-Handy is a cross-platform desktop speech-to-text application built with Tauri (Rust backend + React/TypeScript frontend).
+**Backend (Rust - `src-tauri/src/`):**
 
-### Core Components
+- `lib.rs` / `main.rs` - Entry point, Tauri setup, tray, managers
+- `managers/` - Audio, Model, Transcription business logic
+- `audio_toolkit/` - Device enumeration, VAD using Silero
+- `commands/` - Tauri command handlers
+- `settings.rs` - App settings management
+- `shortcut.rs` - Global keyboard shortcuts
 
-**Backend (Rust - src-tauri/src/):**
+**Frontend (React/TypeScript - `src/`):**
 
-- `lib.rs` - Main application entry point with Tauri setup, tray menu, and managers
-- `managers/` - Core business logic managers:
-  - `audio.rs` - Audio recording and device management
-  - `model.rs` - Whisper model downloading and management
-  - `transcription.rs` - Speech-to-text processing pipeline
-- `audio_toolkit/` - Low-level audio processing:
-  - `audio/` - Device enumeration, recording, resampling
-  - `vad/` - Voice Activity Detection using Silero VAD
-- `commands/` - Tauri command handlers for frontend communication
-- `shortcut.rs` - Global keyboard shortcut handling
-- `settings.rs` - Application settings management
+- `App.tsx` - Main component with onboarding
+- `components/` - UI components
+- `stores/` - Zustand state
+- `i18n/` - Internationalization
 
-**Frontend (React/TypeScript - src/):**
+**Patterns:**
 
-- `App.tsx` - Main application component with onboarding flow
-- `components/settings/` - Settings UI components
-- `components/model-selector/` - Model management interface
-- `hooks/` - React hooks for settings and model management
-- `lib/types.ts` - Shared TypeScript type definitions
-
-### Key Architecture Patterns
-
-**Manager Pattern:** Core functionality is organized into managers (Audio, Model, Transcription) that are initialized at startup and managed by Tauri's state system.
-
-**Command-Event Architecture:** Frontend communicates with backend via Tauri commands, backend sends updates via events.
-
-**Pipeline Processing:** Audio → VAD → Whisper → Text output with configurable components at each stage.
+- Manager Pattern: Core functionality in managers initialized at startup
+- Command-Event: Frontend calls Tauri commands; backend emits events
+- Pipeline: Audio → VAD → Whisper → Text output
 
 ### Technology Stack
 
-**Core Libraries:**
-
-- `whisper-rs` - Local Whisper inference with GPU acceleration
-- `cpal` - Cross-platform audio I/O
-- `vad-rs` - Voice Activity Detection
-- `rdev` - Global keyboard shortcuts
-- `rubato` - Audio resampling
-- `rodio` - Audio playback for feedback sounds
-
-**Platform-Specific Features:**
-
-- macOS: Metal acceleration for Whisper, accessibility permissions
-- Windows: Vulkan acceleration, code signing
-- Linux: OpenBLAS + Vulkan acceleration
+- Backend: `whisper-rs`, `cpal`, `vad-rs`, `rdev`, `rubato`, `rodio`
+- Frontend: React, TypeScript, Tailwind CSS, Zustand, Playwright
+- Platform: Metal (macOS), Vulkan (Windows/Linux)
 
 ### Application Flow
 
-1. **Initialization:** App starts minimized to tray, loads settings, initializes managers
-2. **Model Setup:** First-run downloads preferred Whisper model (Small/Medium/Turbo/Large)
-3. **Recording:** Global shortcut triggers audio recording with VAD filtering
-4. **Processing:** Audio sent to Whisper model for transcription
-5. **Output:** Text pasted to active application via system clipboard
+1. Initialize: Start minimized to tray, load settings
+2. Model Setup: Download preferred Whisper model
+3. Recording: Global shortcut triggers recording with VAD
+4. Processing: Audio → Whisper for transcription
+5. Output: Text pasted to active app via clipboard
 
-### Settings System
+### Single Instance
 
-Settings are stored using Tauri's store plugin with reactive updates:
-
-- Keyboard shortcuts (configurable, supports push-to-talk)
-- Audio devices (microphone/output selection)
-- Model preferences (Small/Medium/Turbo/Large Whisper variants)
-- Audio feedback and translation options
-
-### Single Instance Architecture
-
-The app enforces single instance behavior - launching when already running brings the settings window to front rather than creating a new process.
+App enforces single instance - launching when running brings settings window to front.

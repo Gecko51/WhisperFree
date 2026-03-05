@@ -87,7 +87,7 @@
     },
     "permissions": {
       "title": "Требуются разрешения",
-      "description": "Handy требуются некоторые разрешения для корректной работы.",
+      "description": "WhisperFree требуются некоторые разрешения для корректной работы.",
       "microphone": {
         "title": "Доступ к микрофону",
         "description": "Необходим для прослушивания вашего голоса для транскрипции."
@@ -161,7 +161,7 @@
     "general": {
       "title": "Общие",
       "shortcut": {
-        "title": "Ярлыки Handy",
+        "title": "Ярлыки WhisperFree",
         "description": "Настройте сочетания клавиш для запуска записи речи в текст",
         "loading": "Загрузка ярлыков...",
         "none": "Ярлыки не настроены",
@@ -242,11 +242,11 @@
       },
       "autostart": {
         "label": "Запуск при запуске",
-        "description": "Автоматически запускать Handy при входе в систему."
+        "description": "Автоматически запускать WhisperFree при входе в систему."
       },
       "showTrayIcon": {
         "label": "Показать значок в трее",
-        "description": "Отображать значок Handy в системном трее."
+        "description": "Отображать значок WhisperFree в системном трее."
       },
       "overlay": {
         "title": "Позиция наложения",
@@ -407,7 +407,7 @@
       },
       "updateChecks": {
         "label": "Проверьте наличие обновлений",
-        "description": "Автоматически проверять наличие новых версий Handy"
+        "description": "Автоматически проверять наличие новых версий WhisperFree"
       },
       "soundTheme": {
         "label": "Звуковая тема",
@@ -471,11 +471,11 @@
       "title": "О программе",
       "version": {
         "title": "Версия",
-        "description": "Текущая версия Handy"
+        "description": "Текущая версия WhisperFree"
       },
       "appDataDirectory": {
         "title": "Каталог данных приложения",
-        "description": "Место, где Handy хранит свои данные"
+        "description": "Место, где WhisperFree хранит свои данные"
       },
       "sourceCode": {
         "title": "Исходный код",
@@ -484,7 +484,7 @@
       },
       "supportDevelopment": {
         "title": "Поддержка развития",
-        "description": "Помогите нам продолжить создание Handy",
+        "description": "Помогите нам продолжить создание WhisperFree",
         "button": "Пожертвовать"
       },
       "acknowledgments": {
@@ -492,7 +492,7 @@
         "whisper": {
           "title": "Whisper.cpp",
           "description": "Высокопроизводительный вывод модели автоматического распознавания речи OpenAI Whisper",
-          "details": "Handy использует Whisper.cpp для быстрой локальной обработки речи в текст. Спасибо великолепной работе Георгия Герганова и его участников."
+          "details": "WhisperFree использует Whisper.cpp для быстрой локальной обработки речи в текст. Спасибо великолепной работе Георгия Герганова и его участников."
         }
       }
     }
@@ -535,7 +535,7 @@
   },
   "accessibility": {
     "permissionsRequired": "Требуются разрешения на доступ",
-    "permissionsDescription": "Handy необходимы разрешения на доступ для ввода расшифрованного текста.",
+    "permissionsDescription": "WhisperFree необходимы разрешения на доступ для ввода расшифрованного текста.",
     "openSettings": "Открыть настройки системы",
     "dismiss": "Увольнять"
   },
@@ -544,7 +544,7 @@
   },
   "appLanguage": {
     "title": "Язык приложения",
-    "description": "Изменить языка интерфейса Handy"
+    "description": "Изменить языка интерфейса WhisperFree"
   },
   "overlay": {
     "transcribing": "Расшифровка...",
